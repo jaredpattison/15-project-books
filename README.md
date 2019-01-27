@@ -1,15 +1,14 @@
 ![CF](http://i.imgur.com/7v5ASc8.png) LAB
 =================================================
 
-## Project Name
+## Mongo-ize Book-app
 
-### Author: Student/Group Name
+### Author: Jared & Tanner
 
 ### Links and Resources
-* [repo](http://xyz.com)
+* [repo](https://github.com/jaredpattison/15-project-books)
 * [travis](http://xyz.com)
-* [back-end](http://xyz.com) (when applicable)
-* [front-end](http://xyz.com) (when applicable)
+* [heroku](https://peaceful-brook-13612.herokuapp.com/)
 
 #### Documentation
 * [swagger](http://xyz.com) (API assignments only)
@@ -27,8 +26,8 @@ Usage Notes or examples
 
 ### Setup
 #### `.env` requirements
-* `PORT` - Port Number
-* `MONGODB_URI` - URL to the running mongo instance/db
+* `PORT` - 8080
+* `MONGODB_URI` - MONGODB_URI=mongodb://localhost:27017/books
 
 #### Running the app
 * `npm start`

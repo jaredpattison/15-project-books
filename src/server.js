@@ -10,25 +10,28 @@ const errorHandler = require('./middleware/500.js');
 
 const DB = process.env.DB || 'pg';
 const bookApp = require(`./routes/book-app-${DB}.js`);
-
-
-
-
-// Application Setup
 const app = express();
-const server = {
-  start: (port=process.env.PORT) => app.listen(port, () => console.log('Server Up On', port))
+// Application Setup
+let isRunning = false;
+module.exports = {
+  server: app,
+  start: (port) => {
+    if( ! isRunning ) {
+      app.listen(port, () => {
+        isRunning = true;
+        console.log(`Server Up on ${port}`);
+      });
+    }
+    else {
+      console.log('Server is already running');
+    }
+  },
 };
-module.exports = {app, server};
-
-
 
 // Application Middleware
 app.use(express.urlencoded({extended:true}));
 app.use(methodOverride);
 app.use(express.static('public'));
-
-
 
 // Set the view engine for server-side templating
 app.set('view engine', 'ejs');
@@ -40,4 +43,3 @@ app.use(bookApp);
 // Fallback Routes
 app.get('*', notFoundHandler);
 app.use(errorHandler);
-

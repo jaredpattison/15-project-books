@@ -27,7 +27,7 @@ function Book(info) {
   this.id = info.industryIdentifiers ? `${info.industryIdentifiers[0].identifier}` : '';
 }
 
-function getBooks(request, response) {
+function getBooks(request, response, next) {
   let SQL = 'SELECT * FROM books;';
 
   return client.query(SQL)
@@ -38,10 +38,10 @@ function getBooks(request, response) {
         response.render('pages/index', {books: results.rows})
       }
     })
-    .catch(err => handleError(err, response));
+    .catch(next);
 }
 
-function createSearch(request, response) {
+function createSearch(request, response, next) {
   let url = 'https://www.googleapis.com/books/v1/volumes?q=';
 
   if (request.body.search[1] === 'title') { url += `+intitle:${request.body.search[0]}`; }
@@ -50,14 +50,14 @@ function createSearch(request, response) {
   superagent.get(url)
     .then(apiResponse => apiResponse.body.items.map(bookResult => new Book(bookResult.volumeInfo)))
     .then(results => response.render('pages/searches/show', {results: results}))
-    .catch(err => handleError(err, response));
+    .catch(next);
 }
 
 function newSearch(request, response) {
   response.render('pages/searches/new');
 }
 
-function getBook(request, response) {
+function getBook(request, response, next) {
   getBookshelves()
     .then(shelves => {
       // let SQL = 'SELECT * FROM books WHERE id=$1;';
@@ -65,7 +65,7 @@ function getBook(request, response) {
       let values = [request.params.id];
       client.query(SQL, values)
         .then(result => response.render('pages/books/show', {book: result.rows[0], bookshelves: shelves.rows}))
-        .catch(err => handleError(err, response));
+        .catch(next);
     })
 }
 
@@ -97,7 +97,7 @@ function createShelf(shelf) {
     })
 }
 
-function createBook(request, response) {
+function createBook(request, response, next) {
   createShelf(request.body.bookshelf)
     .then(id => {
       let {title, author, isbn, image_url, description} = request.body;
@@ -106,11 +106,11 @@ function createBook(request, response) {
 
       client.query(SQL, values)
         .then(result => response.redirect(`/books/${result.rows[0].id}`))
-        .catch(err => handleError(err, response));
+        .catch(next);
     })
 }
 
-function updateBook(request, response) {
+function updateBook(request, response, next) {
   let {title, author, isbn, image_url, description, bookshelf_id} = request.body;
   // let SQL = `UPDATE books SET title=$1, author=$2, isbn=$3, image_url=$4, description=$5, bookshelf=$6 WHERE id=$7;`;
   let SQL = `UPDATE books SET title=$1, author=$2, isbn=$3, image_url=$4, description=$5, bookshelf_id=$6 WHERE id=$7;`;
@@ -118,16 +118,16 @@ function updateBook(request, response) {
 
   client.query(SQL, values)
     .then(response.redirect(`/books/${request.params.id}`))
-    .catch(err => handleError(err, response));
+    .catch(next);
 }
 
-function deleteBook(request, response) {
+function deleteBook(request, response, next) {
   let SQL = 'DELETE FROM books WHERE id=$1;';
   let values = [request.params.id];
 
   return client.query(SQL, values)
     .then(response.redirect('/'))
-    .catch(err => handleError(err, response));
+    .catch(next);
 }
 
 module.exports = router;
